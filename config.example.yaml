@@ -1,0 +1,14 @@
+version: "1"
+tls:
+  enabled: false
+applications:
+  - trigger:
+      type: "http"
+      name: "" #component name
+      metadata:
+      - name: "path"
+        value: "/example"
+    source:
+      type: "file"
+      path: "main.wasm"
+
