@@ -6,7 +6,7 @@ Dapr-WASM enables you to run WASM code in Dapr.
 This project is based on dapr and adds wasm support to run wasm code in dapr. wasm code can use dapr capabilities, such as service call, pubsub, etc.
 
 ### Architecture
-! [image-20230305161929424](https://image-1255620078.cos.ap-nanjing.myqcloud.com/image-20230305161929424.png)
+![image-20230305161929424](https://image-1255620078.cos.ap-nanjing.myqcloud.com/image-20230305161929424.png)
 
 ### Advantages
 1. no need to write any glue code, just wasm function code
