@@ -7,8 +7,11 @@ applications:
       name: "" #component name
       metadata:
       - name: "path"
-        value: "/example"
+        value: "/service-call/*"
     source:
       type: "file"
-      path: "main.wasm"
+      path: "examples/service-call/main.wasm"
+    enabled-components:
+    - "statestore"
+components:
 

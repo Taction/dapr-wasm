@@ -26,7 +26,6 @@ import (
 	fmt "fmt"
 	emptypb "github.com/knqyf263/go-plugin/types/known/emptypb"
 	wasm "github.com/knqyf263/go-plugin/wasm"
-	v1 "github.com/taction/dapr-wasm/pkg/proto/common/v1"
 	wazero "github.com/tetratelabs/wazero"
 	api "github.com/tetratelabs/wazero/api"
 	wasi_snapshot_preview1 "github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
@@ -1282,7 +1281,7 @@ type appCallbackPlugin struct {
 	onbindingevent         api.Function
 }
 
-func (p *appCallbackPlugin) OnInvoke(ctx context.Context, request v1.InvokeRequest) (response v1.InvokeResponse, err error) {
+func (p *appCallbackPlugin) OnInvoke(ctx context.Context, request InvokeRequest) (response InvokeResponse, err error) {
 	data, err := request.MarshalVT()
 	if err != nil {
 		return response, err

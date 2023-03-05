@@ -23,7 +23,6 @@ import (
 	anypb "github.com/knqyf263/go-plugin/types/known/anypb"
 	emptypb "github.com/knqyf263/go-plugin/types/known/emptypb"
 	structpb "github.com/knqyf263/go-plugin/types/known/structpb"
-	v1 "github.com/taction/dapr-wasm/pkg/proto/common/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -126,6 +125,116 @@ func (x BindingEventResponse_BindingEventConcurrency) Enum() *BindingEventRespon
 	return p
 }
 
+// Type of HTTP 1.1 Methods
+// RFC 7231: https://tools.ietf.org/html/rfc7231#page-24
+// RFC 5789: https://datatracker.ietf.org/doc/html/rfc5789
+type HTTPExtension_Verb int32
+
+const (
+	HTTPExtension_NONE    HTTPExtension_Verb = 0
+	HTTPExtension_GET     HTTPExtension_Verb = 1
+	HTTPExtension_HEAD    HTTPExtension_Verb = 2
+	HTTPExtension_POST    HTTPExtension_Verb = 3
+	HTTPExtension_PUT     HTTPExtension_Verb = 4
+	HTTPExtension_DELETE  HTTPExtension_Verb = 5
+	HTTPExtension_CONNECT HTTPExtension_Verb = 6
+	HTTPExtension_OPTIONS HTTPExtension_Verb = 7
+	HTTPExtension_TRACE   HTTPExtension_Verb = 8
+	HTTPExtension_PATCH   HTTPExtension_Verb = 9
+)
+
+// Enum value maps for HTTPExtension_Verb.
+var (
+	HTTPExtension_Verb_name = map[int32]string{
+		0: "NONE",
+		1: "GET",
+		2: "HEAD",
+		3: "POST",
+		4: "PUT",
+		5: "DELETE",
+		6: "CONNECT",
+		7: "OPTIONS",
+		8: "TRACE",
+		9: "PATCH",
+	}
+	HTTPExtension_Verb_value = map[string]int32{
+		"NONE":    0,
+		"GET":     1,
+		"HEAD":    2,
+		"POST":    3,
+		"PUT":     4,
+		"DELETE":  5,
+		"CONNECT": 6,
+		"OPTIONS": 7,
+		"TRACE":   8,
+		"PATCH":   9,
+	}
+)
+
+func (x HTTPExtension_Verb) Enum() *HTTPExtension_Verb {
+	p := new(HTTPExtension_Verb)
+	*p = x
+	return p
+}
+
+// Enum describing the supported concurrency for state.
+type StateOptions_StateConcurrency int32
+
+const (
+	StateOptions_CONCURRENCY_UNSPECIFIED StateOptions_StateConcurrency = 0
+	StateOptions_CONCURRENCY_FIRST_WRITE StateOptions_StateConcurrency = 1
+	StateOptions_CONCURRENCY_LAST_WRITE  StateOptions_StateConcurrency = 2
+)
+
+// Enum value maps for StateOptions_StateConcurrency.
+var (
+	StateOptions_StateConcurrency_name = map[int32]string{
+		0: "CONCURRENCY_UNSPECIFIED",
+		1: "CONCURRENCY_FIRST_WRITE",
+		2: "CONCURRENCY_LAST_WRITE",
+	}
+	StateOptions_StateConcurrency_value = map[string]int32{
+		"CONCURRENCY_UNSPECIFIED": 0,
+		"CONCURRENCY_FIRST_WRITE": 1,
+		"CONCURRENCY_LAST_WRITE":  2,
+	}
+)
+
+func (x StateOptions_StateConcurrency) Enum() *StateOptions_StateConcurrency {
+	p := new(StateOptions_StateConcurrency)
+	*p = x
+	return p
+}
+
+// Enum describing the supported consistency for state.
+type StateOptions_StateConsistency int32
+
+const (
+	StateOptions_CONSISTENCY_UNSPECIFIED StateOptions_StateConsistency = 0
+	StateOptions_CONSISTENCY_EVENTUAL    StateOptions_StateConsistency = 1
+	StateOptions_CONSISTENCY_STRONG      StateOptions_StateConsistency = 2
+)
+
+// Enum value maps for StateOptions_StateConsistency.
+var (
+	StateOptions_StateConsistency_name = map[int32]string{
+		0: "CONSISTENCY_UNSPECIFIED",
+		1: "CONSISTENCY_EVENTUAL",
+		2: "CONSISTENCY_STRONG",
+	}
+	StateOptions_StateConsistency_value = map[string]int32{
+		"CONSISTENCY_UNSPECIFIED": 0,
+		"CONSISTENCY_EVENTUAL":    1,
+		"CONSISTENCY_STRONG":      2,
+	}
+)
+
+func (x StateOptions_StateConsistency) Enum() *StateOptions_StateConsistency {
+	p := new(StateOptions_StateConsistency)
+	*p = x
+	return p
+}
+
 // InvokeServiceRequest represents the request message for Service invocation.
 type InvokeServiceRequest struct {
 	state         protoimpl.MessageState
@@ -135,7 +244,7 @@ type InvokeServiceRequest struct {
 	// Required. Callee's app id.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Required. message which will be delivered to callee.
-	Message *v1.InvokeRequest `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	Message *InvokeRequest `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
 }
 
 func (x *InvokeServiceRequest) ProtoReflect() protoreflect.Message {
@@ -149,7 +258,7 @@ func (x *InvokeServiceRequest) GetId() string {
 	return ""
 }
 
-func (x *InvokeServiceRequest) GetMessage() *v1.InvokeRequest {
+func (x *InvokeServiceRequest) GetMessage() *InvokeRequest {
 	if x != nil {
 		return x.Message
 	}
@@ -167,7 +276,7 @@ type GetStateRequest struct {
 	// The key of the desired state
 	Key string `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`
 	// The read consistency of the state store.
-	Consistency v1.StateOptions_StateConsistency `protobuf:"varint,3,opt,name=consistency,proto3,enum=dapr.proto.common.v1.StateOptions_StateConsistency" json:"consistency,omitempty"`
+	Consistency StateOptions_StateConsistency `protobuf:"varint,3,opt,name=consistency,proto3,enum=dapr.proto.runtime.v1.StateOptions_StateConsistency" json:"consistency,omitempty"`
 	// The metadata which will be sent to state store components.
 	Metadata map[string]string `protobuf:"bytes,4,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
@@ -190,11 +299,11 @@ func (x *GetStateRequest) GetKey() string {
 	return ""
 }
 
-func (x *GetStateRequest) GetConsistency() v1.StateOptions_StateConsistency {
+func (x *GetStateRequest) GetConsistency() StateOptions_StateConsistency {
 	if x != nil {
 		return x.Consistency
 	}
-	return v1.StateOptions_CONSISTENCY_UNSPECIFIED
+	return StateOptions_CONSISTENCY_UNSPECIFIED
 }
 
 func (x *GetStateRequest) GetMetadata() map[string]string {
@@ -384,10 +493,10 @@ type DeleteStateRequest struct {
 	Key string `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`
 	// The entity tag which represents the specific version of data.
 	// The exact ETag format is defined by the corresponding data store.
-	Etag *v1.Etag `protobuf:"bytes,3,opt,name=etag,proto3" json:"etag,omitempty"`
+	Etag *Etag `protobuf:"bytes,3,opt,name=etag,proto3" json:"etag,omitempty"`
 	// State operation options which includes concurrency/
 	// consistency/retry_policy.
-	Options *v1.StateOptions `protobuf:"bytes,4,opt,name=options,proto3" json:"options,omitempty"`
+	Options *StateOptions `protobuf:"bytes,4,opt,name=options,proto3" json:"options,omitempty"`
 	// The metadata which will be sent to state store components.
 	Metadata map[string]string `protobuf:"bytes,5,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
@@ -410,14 +519,14 @@ func (x *DeleteStateRequest) GetKey() string {
 	return ""
 }
 
-func (x *DeleteStateRequest) GetEtag() *v1.Etag {
+func (x *DeleteStateRequest) GetEtag() *Etag {
 	if x != nil {
 		return x.Etag
 	}
 	return nil
 }
 
-func (x *DeleteStateRequest) GetOptions() *v1.StateOptions {
+func (x *DeleteStateRequest) GetOptions() *StateOptions {
 	if x != nil {
 		return x.Options
 	}
@@ -440,7 +549,7 @@ type DeleteBulkStateRequest struct {
 	// The name of state store.
 	StoreName string `protobuf:"bytes,1,opt,name=store_name,json=storeName,proto3" json:"store_name,omitempty"`
 	// The array of the state key values.
-	States []*v1.StateItem `protobuf:"bytes,2,rep,name=states,proto3" json:"states,omitempty"`
+	States []*StateItem `protobuf:"bytes,2,rep,name=states,proto3" json:"states,omitempty"`
 }
 
 func (x *DeleteBulkStateRequest) ProtoReflect() protoreflect.Message {
@@ -454,7 +563,7 @@ func (x *DeleteBulkStateRequest) GetStoreName() string {
 	return ""
 }
 
-func (x *DeleteBulkStateRequest) GetStates() []*v1.StateItem {
+func (x *DeleteBulkStateRequest) GetStates() []*StateItem {
 	if x != nil {
 		return x.States
 	}
@@ -470,7 +579,7 @@ type SaveStateRequest struct {
 	// The name of state store.
 	StoreName string `protobuf:"bytes,1,opt,name=store_name,json=storeName,proto3" json:"store_name,omitempty"`
 	// The array of the state key values.
-	States []*v1.StateItem `protobuf:"bytes,2,rep,name=states,proto3" json:"states,omitempty"`
+	States []*StateItem `protobuf:"bytes,2,rep,name=states,proto3" json:"states,omitempty"`
 }
 
 func (x *SaveStateRequest) ProtoReflect() protoreflect.Message {
@@ -484,7 +593,7 @@ func (x *SaveStateRequest) GetStoreName() string {
 	return ""
 }
 
-func (x *SaveStateRequest) GetStates() []*v1.StateItem {
+func (x *SaveStateRequest) GetStates() []*StateItem {
 	if x != nil {
 		return x.States
 	}
@@ -1050,7 +1159,7 @@ type TransactionalStateOperation struct {
 	// The type of operation to be executed
 	OperationType string `protobuf:"bytes,1,opt,name=operationType,proto3" json:"operationType,omitempty"`
 	// State values to be operated on
-	Request *v1.StateItem `protobuf:"bytes,2,opt,name=request,proto3" json:"request,omitempty"`
+	Request *StateItem `protobuf:"bytes,2,opt,name=request,proto3" json:"request,omitempty"`
 }
 
 func (x *TransactionalStateOperation) ProtoReflect() protoreflect.Message {
@@ -1064,7 +1173,7 @@ func (x *TransactionalStateOperation) GetOperationType() string {
 	return ""
 }
 
-func (x *TransactionalStateOperation) GetRequest() *v1.StateItem {
+func (x *TransactionalStateOperation) GetRequest() *StateItem {
 	if x != nil {
 		return x.Request
 	}
@@ -1864,14 +1973,14 @@ type GetConfigurationResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Items map[string]*v1.ConfigurationItem `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Items map[string]*ConfigurationItem `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
 func (x *GetConfigurationResponse) ProtoReflect() protoreflect.Message {
 	panic(`not implemented`)
 }
 
-func (x *GetConfigurationResponse) GetItems() map[string]*v1.ConfigurationItem {
+func (x *GetConfigurationResponse) GetItems() map[string]*ConfigurationItem {
 	if x != nil {
 		return x.Items
 	}
@@ -1957,7 +2066,7 @@ type SubscribeConfigurationResponse struct {
 	// Subscribe id, used to stop subscription.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// The list of items containing configuration values
-	Items map[string]*v1.ConfigurationItem `protobuf:"bytes,2,rep,name=items,proto3" json:"items,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Items map[string]*ConfigurationItem `protobuf:"bytes,2,rep,name=items,proto3" json:"items,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
 func (x *SubscribeConfigurationResponse) ProtoReflect() protoreflect.Message {
@@ -1971,7 +2080,7 @@ func (x *SubscribeConfigurationResponse) GetId() string {
 	return ""
 }
 
-func (x *SubscribeConfigurationResponse) GetItems() map[string]*v1.ConfigurationItem {
+func (x *SubscribeConfigurationResponse) GetItems() map[string]*ConfigurationItem {
 	if x != nil {
 		return x.Items
 	}
@@ -2783,7 +2892,7 @@ type BindingEventResponse struct {
 	// The name of state store where states are saved.
 	StoreName string `protobuf:"bytes,1,opt,name=store_name,json=storeName,proto3" json:"store_name,omitempty"`
 	// The state key values which will be stored in store_name.
-	States []*v1.StateItem `protobuf:"bytes,2,rep,name=states,proto3" json:"states,omitempty"`
+	States []*StateItem `protobuf:"bytes,2,rep,name=states,proto3" json:"states,omitempty"`
 	// The list of output bindings.
 	To []string `protobuf:"bytes,3,rep,name=to,proto3" json:"to,omitempty"`
 	// The content which will be sent to "to" output bindings.
@@ -2804,7 +2913,7 @@ func (x *BindingEventResponse) GetStoreName() string {
 	return ""
 }
 
-func (x *BindingEventResponse) GetStates() []*v1.StateItem {
+func (x *BindingEventResponse) GetStates() []*StateItem {
 	if x != nil {
 		return x.States
 	}
@@ -3054,12 +3163,318 @@ func (x *HealthCheckResponse) ProtoReflect() protoreflect.Message {
 	panic(`not implemented`)
 }
 
+// HTTPExtension includes HTTP verb and querystring
+// when Dapr runtime delivers HTTP content.
+//
+// For example, when callers calls http invoke api
+// POST http://localhost:3500/v1.0/invoke/<app_id>/method/<method>?query1=value1&query2=value2
+//
+// Dapr runtime will parse POST as a verb and extract querystring to quersytring map.
+type HTTPExtension struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Required. HTTP verb.
+	Verb HTTPExtension_Verb `protobuf:"varint,1,opt,name=verb,proto3,enum=dapr.proto.runtime.v1.HTTPExtension_Verb" json:"verb,omitempty"`
+	// Optional. querystring represents an encoded HTTP url query string in the following format: name=value&name2=value2
+	Querystring string `protobuf:"bytes,2,opt,name=querystring,proto3" json:"querystring,omitempty"`
+}
+
+func (x *HTTPExtension) ProtoReflect() protoreflect.Message {
+	panic(`not implemented`)
+}
+
+func (x *HTTPExtension) GetVerb() HTTPExtension_Verb {
+	if x != nil {
+		return x.Verb
+	}
+	return HTTPExtension_NONE
+}
+
+func (x *HTTPExtension) GetQuerystring() string {
+	if x != nil {
+		return x.Querystring
+	}
+	return ""
+}
+
+// InvokeRequest is the message to invoke a method with the data.
+// This message is used in InvokeService of Dapr gRPC Service and OnInvoke
+// of AppCallback gRPC service.
+type InvokeRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Required. method is a method name which will be invoked by caller.
+	Method string `protobuf:"bytes,1,opt,name=method,proto3" json:"method,omitempty"`
+	// Required in unary RPCs. Bytes value or Protobuf message which caller sent.
+	// Dapr treats Any.value as bytes type if Any.type_url is unset.
+	Data *anypb.Any `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	// The type of data content.
+	//
+	// This field is required if data delivers http request body
+	// Otherwise, this is optional.
+	ContentType string `protobuf:"bytes,3,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
+	// HTTP specific fields if request conveys http-compatible request.
+	//
+	// This field is required for http-compatible request. Otherwise,
+	// this field is optional.
+	HttpExtension *HTTPExtension `protobuf:"bytes,4,opt,name=http_extension,json=httpExtension,proto3" json:"http_extension,omitempty"`
+}
+
+func (x *InvokeRequest) ProtoReflect() protoreflect.Message {
+	panic(`not implemented`)
+}
+
+func (x *InvokeRequest) GetMethod() string {
+	if x != nil {
+		return x.Method
+	}
+	return ""
+}
+
+func (x *InvokeRequest) GetData() *anypb.Any {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+func (x *InvokeRequest) GetContentType() string {
+	if x != nil {
+		return x.ContentType
+	}
+	return ""
+}
+
+func (x *InvokeRequest) GetHttpExtension() *HTTPExtension {
+	if x != nil {
+		return x.HttpExtension
+	}
+	return nil
+}
+
+// InvokeResponse is the response message inclduing data and its content type
+// from app callback.
+// This message is used in InvokeService of Dapr gRPC Service and OnInvoke
+// of AppCallback gRPC service.
+type InvokeResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Required in unary RPCs. The content body of InvokeService response.
+	Data *anypb.Any `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
+	// Required. The type of data content.
+	ContentType string `protobuf:"bytes,2,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
+}
+
+func (x *InvokeResponse) ProtoReflect() protoreflect.Message {
+	panic(`not implemented`)
+}
+
+func (x *InvokeResponse) GetData() *anypb.Any {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+func (x *InvokeResponse) GetContentType() string {
+	if x != nil {
+		return x.ContentType
+	}
+	return ""
+}
+
+// Chunk of data sent in a streaming request or response.
+// This is used in requests including InternalInvokeRequestStream.
+type StreamPayload struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Data sent in the chunk.
+	// The amount of data included in each chunk is up to the discretion of the sender, and can be empty.
+	// Additionally, the amount of data doesn't need to be fixed and subsequent messages can send more, or less, data.
+	// Receivers must not make assumptions about the number of bytes they'll receive in each chunk.
+	Data []byte `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
+	// Sequence number. This is a counter that starts from 0 and increments by 1 on each chunk sent.
+	Seq uint32 `protobuf:"varint,2,opt,name=seq,proto3" json:"seq,omitempty"`
+}
+
+func (x *StreamPayload) ProtoReflect() protoreflect.Message {
+	panic(`not implemented`)
+}
+
+func (x *StreamPayload) GetData() []byte {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+func (x *StreamPayload) GetSeq() uint32 {
+	if x != nil {
+		return x.Seq
+	}
+	return 0
+}
+
+// StateItem represents state key, value, and additional options to save state.
+type StateItem struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Required. The state key
+	Key string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	// Required. The state data for key
+	Value []byte `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	// The entity tag which represents the specific version of data.
+	// The exact ETag format is defined by the corresponding data store.
+	Etag *Etag `protobuf:"bytes,3,opt,name=etag,proto3" json:"etag,omitempty"`
+	// The metadata which will be passed to state store component.
+	Metadata map[string]string `protobuf:"bytes,4,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	// Options for concurrency and consistency to save the state.
+	Options *StateOptions `protobuf:"bytes,5,opt,name=options,proto3" json:"options,omitempty"`
+}
+
+func (x *StateItem) ProtoReflect() protoreflect.Message {
+	panic(`not implemented`)
+}
+
+func (x *StateItem) GetKey() string {
+	if x != nil {
+		return x.Key
+	}
+	return ""
+}
+
+func (x *StateItem) GetValue() []byte {
+	if x != nil {
+		return x.Value
+	}
+	return nil
+}
+
+func (x *StateItem) GetEtag() *Etag {
+	if x != nil {
+		return x.Etag
+	}
+	return nil
+}
+
+func (x *StateItem) GetMetadata() map[string]string {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *StateItem) GetOptions() *StateOptions {
+	if x != nil {
+		return x.Options
+	}
+	return nil
+}
+
+// Etag represents a state item version
+type Etag struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// value sets the etag value
+	Value string `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
+}
+
+func (x *Etag) ProtoReflect() protoreflect.Message {
+	panic(`not implemented`)
+}
+
+func (x *Etag) GetValue() string {
+	if x != nil {
+		return x.Value
+	}
+	return ""
+}
+
+// StateOptions configures concurrency and consistency for state operations
+type StateOptions struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Concurrency StateOptions_StateConcurrency `protobuf:"varint,1,opt,name=concurrency,proto3,enum=dapr.proto.runtime.v1.StateOptions_StateConcurrency" json:"concurrency,omitempty"`
+	Consistency StateOptions_StateConsistency `protobuf:"varint,2,opt,name=consistency,proto3,enum=dapr.proto.runtime.v1.StateOptions_StateConsistency" json:"consistency,omitempty"`
+}
+
+func (x *StateOptions) ProtoReflect() protoreflect.Message {
+	panic(`not implemented`)
+}
+
+func (x *StateOptions) GetConcurrency() StateOptions_StateConcurrency {
+	if x != nil {
+		return x.Concurrency
+	}
+	return StateOptions_CONCURRENCY_UNSPECIFIED
+}
+
+func (x *StateOptions) GetConsistency() StateOptions_StateConsistency {
+	if x != nil {
+		return x.Consistency
+	}
+	return StateOptions_CONSISTENCY_UNSPECIFIED
+}
+
+// ConfigurationItem represents all the configuration with its name(key).
+type ConfigurationItem struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Required. The value of configuration item.
+	Value string `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
+	// Version is response only and cannot be fetched. Store is not expected to keep all versions available
+	Version string `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
+	// the metadata which will be passed to/from configuration store component.
+	Metadata map[string]string `protobuf:"bytes,3,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+}
+
+func (x *ConfigurationItem) ProtoReflect() protoreflect.Message {
+	panic(`not implemented`)
+}
+
+func (x *ConfigurationItem) GetValue() string {
+	if x != nil {
+		return x.Value
+	}
+	return ""
+}
+
+func (x *ConfigurationItem) GetVersion() string {
+	if x != nil {
+		return x.Version
+	}
+	return ""
+}
+
+func (x *ConfigurationItem) GetMetadata() map[string]string {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
 // Dapr service provides APIs to user application to access Dapr building blocks.
 // go:plugin type=host
 type Dapr interface {
 	// Invokes a method on a remote Dapr app.
 	// Deprecated: Use proxy mode service invocation instead.
-	InvokeService(context.Context, InvokeServiceRequest) (v1.InvokeResponse, error)
+	InvokeService(context.Context, InvokeServiceRequest) (InvokeResponse, error)
 	// Gets the state for a specific key.
 	GetState(context.Context, GetStateRequest) (GetStateResponse, error)
 	// Gets a bulk of state items for a list of keys
@@ -3130,7 +3545,7 @@ type Dapr interface {
 // go:plugin type=plugin version=1
 type AppCallback interface {
 	// Invokes service method with InvokeRequest.
-	OnInvoke(context.Context, v1.InvokeRequest) (v1.InvokeResponse, error)
+	OnInvoke(context.Context, InvokeRequest) (InvokeResponse, error)
 	// Lists all topics subscribed by this app.
 	ListTopicSubscriptions(context.Context, emptypb.Empty) (ListTopicSubscriptionsResponse, error)
 	// Subscribes events from Pubsub

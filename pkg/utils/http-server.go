@@ -24,7 +24,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gorilla/mux"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 )
@@ -35,7 +34,7 @@ const (
 )
 
 // StartServer starts a HTTP or HTTP2 server
-func StartServer(port int, appRouter func() *mux.Router, allowHTTP2 bool, enableTLS bool) {
+func StartServer(port int, appRouter http.Handler, allowHTTP2 bool, enableTLS bool, errCh chan<- error) {
 
 	// Create a listener
 	addr := fmt.Sprintf(":%d", port)
@@ -52,13 +51,13 @@ func StartServer(port int, appRouter func() *mux.Router, allowHTTP2 bool, enable
 		//nolint:gosec
 		server = &http.Server{
 			Addr:    addr,
-			Handler: h2c.NewHandler(appRouter(), h2s),
+			Handler: h2c.NewHandler(appRouter, h2s),
 		}
 	} else {
 		//nolint:gosec
 		server = &http.Server{
 			Addr:    addr,
-			Handler: appRouter(),
+			Handler: appRouter,
 		}
 	}
 
@@ -77,7 +76,7 @@ func StartServer(port int, appRouter func() *mux.Router, allowHTTP2 bool, enable
 		// Wait for cancelation signal
 		<-stopCh
 		log.Println("Shutdown signal received")
-		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		server.Shutdown(ctx)
 	}()
@@ -90,9 +89,10 @@ func StartServer(port int, appRouter func() *mux.Router, allowHTTP2 bool, enable
 	}
 
 	if err != http.ErrServerClosed {
-		log.Fatalf("Failed to run server: %v", err)
+		log.Printf("Failed to run server: %v\n", err)
+		errCh <- err
 	}
-
+	close(errCh)
 	log.Println("Server shut down")
 }
 

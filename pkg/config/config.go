@@ -5,6 +5,12 @@
  */
 package config
 
+const (
+	TriggerTypeHTTP    = "http"
+	TriggerTypeBinding = "binding"
+	TriggerTypePubSub  = "pubsub"
+)
+
 type Config struct {
 	Version      string `yaml:"version"`
 	TLS          `yaml:"tls"`

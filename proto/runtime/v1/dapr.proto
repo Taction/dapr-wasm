@@ -30,7 +30,7 @@ option go_package = "github.com/dapr-wasm/dapr/pkg/proto/runtime/v1;runtime";
 service Dapr {
   // Invokes a method on a remote Dapr app.
   // Deprecated: Use proxy mode service invocation instead.
-  rpc InvokeService(InvokeServiceRequest) returns (common.v1.InvokeResponse) {}
+  rpc InvokeService(InvokeServiceRequest) returns (InvokeResponse) {}
 
   // Gets the state for a specific key.
   rpc GetState(GetStateRequest) returns (GetStateResponse) {}
@@ -132,7 +132,7 @@ message InvokeServiceRequest {
   string id = 1;
 
   // Required. message which will be delivered to callee.
-  common.v1.InvokeRequest message = 3;
+  InvokeRequest message = 3;
 }
 
 // GetStateRequest is the message to get key-value states from specific state store.
@@ -144,7 +144,7 @@ message GetStateRequest {
   string key = 2;
 
   // The read consistency of the state store.
-  common.v1.StateOptions.StateConsistency consistency = 3;
+  StateOptions.StateConsistency consistency = 3;
 
   // The metadata which will be sent to state store components.
   map<string, string> metadata = 4;
@@ -214,11 +214,11 @@ message DeleteStateRequest {
 
   // The entity tag which represents the specific version of data.
   // The exact ETag format is defined by the corresponding data store.
-  common.v1.Etag etag = 3;
+  Etag etag = 3;
 
   // State operation options which includes concurrency/
   // consistency/retry_policy.
-  common.v1.StateOptions options = 4;
+  StateOptions options = 4;
 
   // The metadata which will be sent to state store components.
   map<string, string> metadata = 5;
@@ -230,7 +230,7 @@ message DeleteBulkStateRequest {
   string store_name = 1;
 
   // The array of the state key values.
-  repeated common.v1.StateItem states = 2;
+  repeated StateItem states = 2;
 }
 
 // SaveStateRequest is the message to save multiple states into state store.
@@ -239,7 +239,7 @@ message SaveStateRequest {
   string store_name = 1;
 
   // The array of the state key values.
-  repeated common.v1.StateItem states = 2;
+  repeated StateItem states = 2;
 }
 
 // QueryStateRequest is the message to query state store.
@@ -425,7 +425,7 @@ message TransactionalStateOperation {
   string operationType = 1;
 
   // State values to be operated on
-  common.v1.StateItem request = 2;
+  StateItem request = 2;
 }
 
 // ExecuteStateTransactionRequest is the message to execute multiple operations on a specified store.
@@ -585,7 +585,7 @@ message GetConfigurationRequest {
 // GetConfigurationResponse is the response conveying the list of configuration values.
 // It should be the FULL configuration of specified application which contains all of its configuration items.
 message GetConfigurationResponse {
-  map<string, common.v1.ConfigurationItem> items = 1;
+  map<string, ConfigurationItem> items = 1;
 }
 
 // SubscribeConfigurationRequest is the message to get a list of key-value configuration from specified configuration store.
@@ -616,7 +616,7 @@ message SubscribeConfigurationResponse {
   string id = 1;
 
   // The list of items containing configuration values
-  map<string, common.v1.ConfigurationItem> items = 2;
+  map<string, ConfigurationItem> items = 2;
 }
 
 message UnsubscribeConfigurationResponse {
@@ -722,7 +722,7 @@ message TerminateWorkflowResponse {
 // go:plugin type=plugin version=1
 service AppCallback {
   // Invokes service method with InvokeRequest.
-  rpc OnInvoke (common.v1.InvokeRequest) returns (common.v1.InvokeResponse) {}
+  rpc OnInvoke (InvokeRequest) returns (InvokeResponse) {}
 
   // Lists all topics subscribed by this app.
   rpc ListTopicSubscriptions(google.protobuf.Empty) returns (ListTopicSubscriptionsResponse) {}
@@ -914,7 +914,7 @@ message BindingEventResponse {
   string store_name = 1;
 
   // The state key values which will be stored in store_name.
-  repeated common.v1.StateItem states = 2;
+  repeated StateItem states = 2;
 
   // BindingEventConcurrency is the kind of concurrency
   enum BindingEventConcurrency {

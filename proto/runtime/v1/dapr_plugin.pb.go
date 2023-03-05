@@ -24,7 +24,6 @@ import (
 	context "context"
 	emptypb "github.com/knqyf263/go-plugin/types/known/emptypb"
 	wasm "github.com/knqyf263/go-plugin/wasm"
-	v1 "github.com/taction/dapr-wasm/pkg/proto/common/v1"
 )
 
 const AppCallbackPluginAPIVersion = 1
@@ -43,7 +42,7 @@ func RegisterAppCallback(p AppCallback) {
 //export app_callback_on_invoke
 func _app_callback_on_invoke(ptr, size uint32) uint64 {
 	b := wasm.PtrToByte(ptr, size)
-	var req v1.InvokeRequest
+	var req InvokeRequest
 	if err := req.UnmarshalVT(b); err != nil {
 		return 0
 	}
@@ -150,7 +149,7 @@ func NewDapr() Dapr {
 //export invoke_service
 func _invoke_service(ptr uint32, size uint32) uint64
 
-func (h dapr) InvokeService(ctx context.Context, request InvokeServiceRequest) (response v1.InvokeResponse, err error) {
+func (h dapr) InvokeService(ctx context.Context, request InvokeServiceRequest) (response InvokeResponse, err error) {
 	buf, err := request.MarshalVT()
 	if err != nil {
 		return response, err
